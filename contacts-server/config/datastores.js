@@ -48,6 +48,6 @@ module.exports.datastores = {
     *                                                                          *
     ***************************************************************************/
     adapter: 'sails-mysql',
-    url: 'mysql://root:password@localhost:3306/contacts',
+    url: 'mysql://denial:masterpassword@denial-aurora-contacts-db.cluster-ck7a5aw5p7fy.us-east-1.rds.amazonaws.com:3306/contacts',
   },
 };
