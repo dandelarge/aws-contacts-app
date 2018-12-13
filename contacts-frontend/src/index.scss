@@ -1,0 +1,113 @@
+%contactText {
+  font-size: 22px;
+  padding: 0 15px;
+}
+
+%card {
+  margin: 15px;
+  border-radius: 3px;
+  box-shadow: #666 3px 3px 10px;
+  font-size: 22px;
+}
+
+%whitecard {
+  background-color: white;
+  width: 350px;
+  border: 1px solid #e6e6e6;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+body {
+  color: #666 !important;
+  background-color: #f3f3f3 !important;
+}
+
+h3 {
+  margin: 15px !important;
+}
+
+.header {
+  padding: 15px;
+  background-color: cornflowerblue;
+  color: white;
+  box-shadow: #999 0px 1px 15px;
+}
+
+ul.contacts-list {
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+li.contact-card {
+  @extend %card;
+  @extend %whitecard;
+  list-style: none;
+  padding: 10px 0;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+
+  .username {
+    @extend %contactText;
+    font-weight: 600;
+  }
+  .phone {
+    @extend %contactText;
+    font-weight: 300;
+  }
+
+  &:hover {
+    box-shadow: #666 5px 5px 15px;
+  }
+  &:active {
+    box-shadow: #666 3px 3px 10px;
+  }
+}
+
+img.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  box-shadow: 1px 1px 5px;
+  margin: 0px 15px;
+}
+
+.add-contact-button {
+  @extend %card;
+  padding: 5px 15px;
+  display: inline-block;
+  background-color: cornflowerblue;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.contact-form {
+  @extend %card;
+  @extend %whitecard;
+  padding: 15px;
+  input {
+    display: block;
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid #999;
+    margin: 15px 0;
+    outline: none;
+
+    &[type=file] {
+      width: 0.1px;
+      height: 0.1px;
+      visibility: hidden;
+      position: absolute;
+      z-index: -1;
+    }
+
+    &[type=submit] {
+      margin: 30px 0 0 0;
+    }
+  }
+}

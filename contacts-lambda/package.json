@@ -6,6 +6,7 @@
   "author": "denial",
   "license": "ISC",
   "dependencies": {
-    "sharp": "^0.17.3"
+    "sails-mysql": "^1.0.1",
+    "waterline": "^0.13.6"
   }
 }

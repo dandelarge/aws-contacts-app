@@ -1,41 +1,37 @@
 const AWS = require('aws-sdk');
 const S3 = new AWS.S3();
 
-const bucket = process.env.BUCKET;
-const apiUrl = process.env.API_URL;
+const Waterline = require('waterline');
+const mysql = require('sails-mysql');
+const orm = new Waterline();
 
-const service = new AWS.Service({
-    endpoint: apiUrl,
-    convertResponseTypes: false,
-    apiConfig: {
-        metadata: {
-            protocol: 'rest-json'
+const contactsCollection = Waterline.Collection.extend({
+    identity: 'contacts',
+    datastore: 'default',
+    primaryKey: 'id',
+    attributes: {
+        id: {
+            type: 'number',
+            autoMigrations: {autoincrement: true}
         },
-        operations: {
-            CreateContact: {
-                http: {
-                    method: 'POST',
-                    requestUri: '/contacts',
-                },
-                input: {
-                    type: 'structure',
-                    payload: 'data',
-                    members: {
-                        'data': {
-                            type: 'structure',
-                            members: {
-                                'username': {},
-                                'fullname': {},
-                                'avatar': {},
-                                'phone': {}
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        username: {type: 'string'},
+        fullname: {type: 'string'},
+        avatar: {type: 'string'},
+        phone: {type: 'string'}
     }
 });
+
+orm.registerModel(contactsCollection);
+
+const ormConfig = {
+    adapters: { mysql },
+    datastores: {
+        adapter: 'mysql',
+        url: 'mysql://denial:masterpassword@denial-aurora-contacts-db.cluster-ck7a5aw5p7fy.us-east-1.rds.amazonaws.com:3306/contacts'
+    }
+}
+
+const bucket = process.env.BUCKET;
 
 exports.handler = (event, context, callback) => {
     const body = JSON.parse(event.body);
@@ -49,26 +45,25 @@ exports.handler = (event, context, callback) => {
 
     S3.putObject({...params, Body: image, ContentType: 'image/png'}).promise()
     .then(() => {
-        service.createContact({
-            data: {
-                username: body.usernmae,
-                fullname: body.fullname,
-                phone: body.phone,
-                avatar: `https://s3.amazonaws.com/denial-image-storage/avatars/${body.username}.png`,
-            }
-        }, (err, data) => {
-            if(err) {
-                console.log(err);
-                return callback(err, null);
-            }
-            return callback(null, {
+        orm.initialize(ormConfig, (err, ontology) => {
+            const Contact = ontology.collections.contacts;
+
+            (async () => {
+                return await Contact.create({
+                    username: body.usernmae,
+                    fullname: body.fullname,
+                    phone: body.phone,
+                    avatar: `https://s3.amazonaws.com/denial-image-storage/avatars/${body.username}.png`
+                });
+            })()
+            .then(contact => callback(null, {
                 statusCode: 200,
                 headers: {},
-                body: JSON.stringify(data),
+                body: JSON.stringify(contact),
                 isBase64Encoded: false
-            });
+            }))
+            .catch(err => callback(err, null));
         });
-
     })
     .catch(err => callback(err, null));
 };
