@@ -3,7 +3,6 @@ import axios from 'axios';
 import ContactsList from './Contacts'
 import ContactForm from './ContactForm';
 
-
 const contactsArray = [
   {
     id: 0,
@@ -37,13 +36,28 @@ const contactsArray = [
 
 class App extends Component {
   state = {
-    contacts: []
+    contacts: [],
+    formActive: false
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/contacts', {headers: {"Access-Control-Allow-Origin": "*"}})
-    .then(contacts => this.setState({ contacts }));
+    axios.get('http://localhost:8080/contacts')
+    .then(({data}) => {
+      this.setState({contacts: data});
+    })
+    .catch(err => {
+      console.log(err);
+      this.setState({contacts: {
+        id: 0,
+        avatar: 'https://pbs.twimg.com/profile_images/1002272769352978433/9S4QWSR0_400x400.jpg',
+        username: 'SpongyBobu',
+        fullname: '',
+        phone: '+31 6 3400 7732'
+      }});
+    });
   }
+
+
 
   render() {
     return (
@@ -57,10 +71,7 @@ class App extends Component {
           <div className="col">
             <h3>Find a sweet list of contacts below</h3>
             <ContactsList contacts={this.state.contacts}/>
-            <div className="add-contact-button">
-              + Add a new contact
-            </div>
-            <ContactForm />
+            <ContactForm adding={this.state.formActive}/>
           </div>
         </div>
       </div>

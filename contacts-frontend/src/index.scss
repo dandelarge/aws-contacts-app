@@ -90,6 +90,13 @@ img.avatar {
   @extend %card;
   @extend %whitecard;
   padding: 15px;
+
+  label {
+    display: flex;
+    align-items: center;
+    margin: 0;
+  }
+
   input {
     display: block;
     width: 100%;
